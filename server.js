@@ -16,17 +16,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
- * 縣市名稱映射表
- * 將 URL 參數轉換為 CWA API 需要的格式
- */
+ * 縣市名稱映射表：將 URL 參數轉換為 CWA API 需要的格式
+ */ 
 const CITY_NAME_MAP = {
+  // 直轄市
   taipei: "臺北市",
-  new_taipei: "新北市",
+  newtaipei: "新北市",
+  taoyuan: "桃園市",
+  taichung: "臺中市",
+  tainan: "臺南市",
+  kaohsiung: "高雄市",
+  // 省轄市
+  keelung: "基隆市",
+  hsinchu_city: "新竹市",
+  chiayi_city: "嘉義市",
+  // 縣
+  hsinchu_county: "新竹縣",
+  miaoli: "苗栗縣",
+  changhua: "彰化縣",
+  nantou: "南投縣",
+  yunlin: "雲林縣",
+  chiayi_county: "嘉義縣",
+  pingtung: "屏東縣",
+  yilan: "宜蘭縣",
   hualien: "花蓮縣",
-  // 未來可以在這裡輕鬆添加更多縣市
-  // taichung: "臺中市",
-  // tainan: "臺南市",
-  // kaohsiung: "高雄市",
+  taitung: "臺東縣",
+  penghu: "澎湖縣",
+  kinmen: "金門縣",
+  lienchiang: "連江縣",
 };
 
 /**
@@ -158,16 +175,20 @@ const getWeatherByCity = async (req, res) => {
 
 // Routes
 app.get("/", (req, res) => {
+  // 從 CITY_NAME_MAP 動態生成 examples，合併顯示城市名稱和 API 網址
+  const examples = Object.keys(CITY_NAME_MAP).reduce((acc, cityKey) => {
+    acc[cityKey] = {
+      name: CITY_NAME_MAP[cityKey],
+      url: `/api/weather/${cityKey}`,
+    };
+    return acc;
+  }, {});
+
   res.json({
     message: "歡迎使用 CWA 天氣預報 API",
     endpoints: {
       weather: "/api/weather/:city",
-      availableCities: Object.keys(CITY_NAME_MAP),
-      examples: {
-        taipei: "/api/weather/taipei",
-        new_taipei: "/api/weather/new_taipei",
-        hualien: "/api/weather/hualien",
-      },
+      availableCities: examples,
       health: "/api/health",
     },
   });
